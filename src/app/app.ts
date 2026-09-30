@@ -1,12 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+/**
+ * Root application component.
+ * Renders only a <router-outlet> — all layout (header/footer) is handled
+ * by the ShellComponent, which is loaded as the parent route for most pages.
+ */
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  template: '<router-outlet />',
 })
-export class App {
-  protected readonly title = signal('eventhub');
-}
+export class App {}

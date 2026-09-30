@@ -1,0 +1,6 @@
+// core/auth/ — reserved for auth-specific infrastructure.
+//
+// Will be populated in the Auth feature chunk with:
+//   - token.service.ts       (JWT storage & refresh)
+//   - auth.interceptor.ts    (attaches Bearer token to HTTP requests)
+//   - session.service.ts     (session persistence across tabs)

@@ -1,0 +1,71 @@
+<header class="header">
+  <div class="header-inner">
+    <!-- Brand -->
+    <a routerLink="/" class="header-brand" aria-label="EventHub home" id="header-brand-link">
+      <svg
+        class="brand-logo"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span class="brand-text">EventHub</span>
+    </a>
+
+    <!-- Primary navigation -->
+    <nav class="header-nav" [class.is-open]="isNavOpen()" aria-label="Main navigation" id="main-nav">
+      <a
+        routerLink="/"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-link"
+        id="nav-home-link"
+      >Home</a>
+      <a routerLink="/events" routerLinkActive="is-active" class="nav-link" id="nav-events-link">Events</a>
+
+      @if (isAuthenticated()) {
+        <a routerLink="/bookings" routerLinkActive="is-active" class="nav-link" id="nav-bookings-link">Bookings</a>
+        <a routerLink="/dashboard" routerLinkActive="is-active" class="nav-link" id="nav-dashboard-link">Dashboard</a>
+      }
+    </nav>
+
+    <!-- Auth actions -->
+    <div class="header-actions" [class.is-open]="isNavOpen()">
+      @if (isAuthenticated()) {
+        <span class="header-username">{{ currentUser()?.displayName }}</span>
+        <button
+          class="btn btn-ghost btn-sm"
+          (click)="logout()"
+          id="header-logout-btn"
+          type="button"
+        >Sign Out</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="is-active" class="nav-link" id="header-login-link">Login</a>
+        <a routerLink="/register" class="btn btn-primary btn-sm" id="header-signup-btn">Sign Up</a>
+      }
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button
+      class="nav-toggle"
+      type="button"
+      (click)="toggleNav()"
+      [attr.aria-expanded]="isNavOpen()"
+      aria-label="Toggle navigation"
+      aria-controls="main-nav"
+      id="nav-toggle-btn"
+    >
+      <span class="toggle-line"></span>
+      <span class="toggle-line"></span>
+      <span class="toggle-line"></span>
+    </button>
+  </div>
+</header>
