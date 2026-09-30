@@ -1,0 +1,38 @@
+<div class="topbar">
+  <!-- Left: hamburger + context label -->
+  <div class="topbar-left">
+    <button
+      class="topbar-menu-btn btn btn-icon btn-ghost"
+      type="button"
+      (click)="menuToggled.emit()"
+      aria-label="Toggle sidebar navigation"
+      id="topbar-menu-toggle"
+    >
+      <app-icon name="menu" />
+    </button>
+    @if (context()) {
+      <span class="topbar-context">{{ context() }}</span>
+    }
+  </div>
+
+  <!-- Right: user info + logout -->
+  <div class="topbar-right">
+    @if (currentUser()) {
+      <div class="topbar-user">
+        <div class="topbar-user-avatar" aria-hidden="true">
+          {{ currentUser()!.displayName.charAt(0).toUpperCase() }}
+        </div>
+        <span class="topbar-user-name">{{ currentUser()!.displayName }}</span>
+      </div>
+      <button
+        class="btn btn-ghost btn-sm topbar-logout"
+        type="button"
+        (click)="logout()"
+        id="topbar-logout-btn"
+      >
+        <app-icon name="log-out" />
+        <span>Sign Out</span>
+      </button>
+    }
+  </div>
+</div>

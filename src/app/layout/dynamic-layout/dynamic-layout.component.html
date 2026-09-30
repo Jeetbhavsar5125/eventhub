@@ -1,0 +1,54 @@
+<ng-container [ngSwitch]="layoutType()">
+  
+  <!-- 1. PUBLIC LAYOUT (Header + Footer + Full Main) -->
+  <ng-container *ngSwitchCase="'public'">
+    <app-header />
+    <main class="public-main" id="main-content">
+      <router-outlet />
+    </main>
+    <app-footer />
+  </ng-container>
+
+  <!-- 2. USER LAYOUT (Header + Footer + Constrained Main) -->
+  <ng-container *ngSwitchCase="'user'">
+    <app-header />
+    <main class="user-main" id="main-content">
+      <div class="user-container container container-xl">
+        <router-outlet />
+      </div>
+    </main>
+    <app-footer />
+  </ng-container>
+
+  <!-- 3. DASHBOARD LAYOUT (Sidebar + Topbar) for Admin/Organizer -->
+  <ng-container *ngSwitchCase="'dashboard'">
+    <div class="dashboard-layout">
+      <!-- Mobile overlay -->
+      @if (isSidebarOpen()) {
+        <div class="sidebar-overlay" (click)="closeSidebar()" aria-hidden="true"></div>
+      }
+
+      <!-- Sidebar -->
+      <app-sidebar
+        [title]="sidebarTitle()"
+        [navItems]="sidebarNavItems()"
+        [isOpen]="isSidebarOpen()"
+        (closeRequested)="closeSidebar()"
+      />
+
+      <!-- Main content area -->
+      <div class="dashboard-body">
+        <app-topbar
+          [context]="topbarContext()"
+          (menuToggled)="toggleSidebar()"
+        />
+        <main class="dashboard-main" id="main-content">
+          <div class="dashboard-page">
+            <router-outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  </ng-container>
+
+</ng-container>

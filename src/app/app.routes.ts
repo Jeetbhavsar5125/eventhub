@@ -2,20 +2,23 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { PlatformRole } from './core/models/platform-role.enum';
+import { SidebarNavItem } from './layout/core/sidebar/sidebar-nav-item.model';
 
-/**
- * Application routes.
- *
- * Structure:
- *  - Login / Register → outside ShellComponent (no header/footer)
- *  - All other routes → inside ShellComponent (with header/footer)
- *  - 404 wildcard → inside shell so it still has navigation
- *
- * All feature components are lazy-loaded via loadComponent for code splitting.
- * Route params are automatically bound to component inputs via withComponentInputBinding().
- */
+const ADMIN_NAV_ITEMS: SidebarNavItem[] = [
+  { label: 'Dashboard', path: '/admin', icon: 'dashboard', exact: true },
+  { label: 'Users', path: '/admin/users', icon: 'users' },
+  { label: 'Events', path: '/admin/events', icon: 'calendar' },
+  { label: 'Categories', path: '/admin/categories', icon: 'tag' },
+];
+
+const ORGANIZER_NAV_ITEMS: SidebarNavItem[] = [
+  { label: 'Dashboard', path: '/organizer', icon: 'dashboard', exact: true },
+  { label: 'My Events', path: '/organizer/events', icon: 'calendar' },
+  { label: 'Attendees', path: '/organizer/attendees', icon: 'users' },
+];
+
 export const routes: Routes = [
-  // ── Auth pages (no shell layout) ─────────────────────────────────────────
+  // ── Auth pages (no layout chrome) ─────────────────────────────────────────
   {
     path: 'login',
     loadComponent: () =>
@@ -29,13 +32,13 @@ export const routes: Routes = [
     title: 'Create Account — EventHub',
   },
 
-  // ── Shell layout (header + footer) ───────────────────────────────────────
+  // ── Public Layout ──────────────────────────────────────────────────────────
   {
     path: '',
+    data: { layoutType: 'public' },
     loadComponent: () =>
-      import('./layout/shell/shell.component').then((m) => m.ShellComponent),
+      import('./layout/dynamic-layout/dynamic-layout.component').then((m) => m.DynamicLayoutComponent),
     children: [
-      // Public routes
       {
         path: '',
         loadComponent: () =>
@@ -58,52 +61,145 @@ export const routes: Routes = [
           ),
         title: 'Event Detail — EventHub',
       },
+    ],
+  },
 
-      // Protected — requires authenticated user
+  // ── User Layout (Dashboard) ────────────────────────────────────────────────
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    data: { layoutType: 'user' },
+    loadComponent: () =>
+      import('./layout/dynamic-layout/dynamic-layout.component').then((m) => m.DynamicLayoutComponent),
+    children: [
       {
-        path: 'bookings',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/bookings/bookings.component').then((m) => m.BookingsComponent),
-        title: 'My Bookings — EventHub',
-      },
-      {
-        path: 'dashboard',
-        canActivate: [authGuard],
+        path: '',
         loadComponent: () =>
           import('./features/user/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent,
           ),
         title: 'Dashboard — EventHub',
       },
-
-      // Protected — requires Admin or SuperAdmin platform role
       {
-        path: 'organizer',
-        canActivate: [authGuard, roleGuard],
-        data: { roles: [PlatformRole.Admin, PlatformRole.SuperAdmin] },
+        path: 'bookings',
         loadComponent: () =>
-          import('./features/organizer/organizer.component').then((m) => m.OrganizerComponent),
+          import('./features/bookings/bookings.component').then((m) => m.BookingsComponent),
+        title: 'My Bookings — EventHub',
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/user/profile/profile.component').then((m) => m.ProfileComponent),
+        title: 'My Profile — EventHub',
+      },
+    ],
+  },
+
+  // ── Organizer Layout ───────────────────────────────────────────────────────
+  {
+    path: 'organizer',
+    canActivate: [authGuard, roleGuard],
+    data: { 
+      roles: [PlatformRole.Admin, PlatformRole.SuperAdmin],
+      layoutType: 'dashboard',
+      sidebarTitle: 'Organizer',
+      topbarContext: 'Organizer Portal',
+      navItems: ORGANIZER_NAV_ITEMS
+    },
+    loadComponent: () =>
+      import('./layout/dynamic-layout/dynamic-layout.component').then((m) => m.DynamicLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/organizer/dashboard/organizer-dashboard.component').then(
+            (m) => m.OrganizerDashboardComponent,
+          ),
         title: 'Organizer Portal — EventHub',
       },
       {
-        path: 'admin',
-        canActivate: [authGuard, roleGuard],
-        data: { roles: [PlatformRole.Admin, PlatformRole.SuperAdmin] },
+        path: 'events',
         loadComponent: () =>
-          import('./features/admin/admin.component').then((m) => m.AdminComponent),
+          import('./features/organizer/events/organizer-events.component').then(
+            (m) => m.OrganizerEventsComponent,
+          ),
+        title: 'Manage Events — EventHub',
+      },
+      {
+        path: 'attendees',
+        loadComponent: () =>
+          import('./features/organizer/attendees/organizer-attendees.component').then(
+            (m) => m.OrganizerAttendeesComponent,
+          ),
+        title: 'Manage Attendees — EventHub',
+      },
+    ],
+  },
+
+  // ── Admin Layout ───────────────────────────────────────────────────────────
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard],
+    data: { 
+      roles: [PlatformRole.Admin, PlatformRole.SuperAdmin],
+      layoutType: 'dashboard',
+      sidebarTitle: 'Admin',
+      topbarContext: 'Admin Panel',
+      navItems: ADMIN_NAV_ITEMS
+    },
+    loadComponent: () =>
+      import('./layout/dynamic-layout/dynamic-layout.component').then((m) => m.DynamicLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/admin/dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent,
+          ),
         title: 'Admin Panel — EventHub',
       },
-
-      // 404 — inside shell so users still have navigation
       {
-        path: '**',
+        path: 'users',
+        loadComponent: () =>
+          import('./features/admin/users/admin-users.component').then(
+            (m) => m.AdminUsersComponent,
+          ),
+        title: 'Manage Users — EventHub',
+      },
+      {
+        path: 'events',
+        loadComponent: () =>
+          import('./features/admin/events/admin-events.component').then(
+            (m) => m.AdminEventsComponent,
+          ),
+        title: 'Moderate Events — EventHub',
+      },
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('./features/admin/categories/admin-categories.component').then(
+            (m) => m.AdminCategoriesComponent,
+          ),
+        title: 'Manage Categories — EventHub',
+      },
+    ],
+  },
+
+  // ── 404 Fallback (Must be last) ────────────────────────────────────────────
+  {
+    path: '**',
+    data: { layoutType: 'public' },
+    loadComponent: () =>
+      import('./layout/dynamic-layout/dynamic-layout.component').then((m) => m.DynamicLayoutComponent),
+    children: [
+      {
+        path: '',
         loadComponent: () =>
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
         title: 'Page Not Found — EventHub',
-      },
-    ],
-  },
+      }
+    ]
+  }
 ];

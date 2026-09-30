@@ -1,0 +1,48 @@
+<aside class="sidebar" [class.is-open]="isOpen()" role="navigation" [attr.aria-label]="title() + ' navigation'">
+  <!-- Brand / Logo -->
+  <div class="sidebar-brand">
+    <a routerLink="/" class="sidebar-brand-link" (click)="close()" id="sidebar-home-link">
+      <svg class="sidebar-brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+      <span class="sidebar-brand-name">EventHub</span>
+    </a>
+    @if (title()) {
+      <span class="sidebar-context">{{ title() }}</span>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    @for (item of navItems(); track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        class="sidebar-nav-item"
+        (click)="close()"
+        [id]="'sidebar-nav-' + item.label.toLowerCase().replace(' ', '-')"
+      >
+        <span class="sidebar-nav-icon" aria-hidden="true">
+          <app-icon [name]="item.icon" />
+        </span>
+        <span class="sidebar-nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- User area at bottom -->
+  @if (currentUser()) {
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" aria-hidden="true">
+          {{ currentUser()!.displayName.charAt(0).toUpperCase() }}
+        </div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">{{ currentUser()!.displayName }}</span>
+          <span class="sidebar-user-role">{{ currentUser()!.platformRole }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</aside>

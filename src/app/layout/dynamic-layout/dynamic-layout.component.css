@@ -1,0 +1,73 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── PUBLIC ── */
+.public-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+/* ── USER ── */
+.user-main {
+  flex: 1;
+  background-color: var(--color-bg);
+  padding: var(--space-8) 0;
+}
+.user-container {
+  padding-left: var(--content-padding-x);
+  padding-right: var(--content-padding-x);
+}
+
+/* ── DASHBOARD (Admin/Organizer) ── */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  position: relative;
+  flex: 1;
+}
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  z-index: calc(var(--z-sidebar) - 1);
+  backdrop-filter: blur(2px);
+}
+.dashboard-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-slow);
+}
+.dashboard-main {
+  flex: 1;
+  overflow-y: auto;
+}
+.dashboard-page {
+  padding: var(--content-padding-y) var(--content-padding-x);
+  max-width: var(--container-xl);
+  margin: 0 auto;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .dashboard-body {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-main {
+    padding: var(--space-6) 0;
+  }
+  .dashboard-page {
+    padding: var(--space-6) var(--space-4);
+  }
+}
