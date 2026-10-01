@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { guestGuard } from './core/guards/guest.guard';
 import { PlatformRole } from './core/models/platform-role.enum';
 import { SidebarNavItem } from './layout/core/sidebar/sidebar-nav-item.model';
 
@@ -21,15 +22,23 @@ export const routes: Routes = [
   // ── Auth pages (no layout chrome) ─────────────────────────────────────────
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
     title: 'Sign In — EventHub',
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
     title: 'Create Account — EventHub',
+  },
+  {
+    path: 'forbidden',
+    loadComponent: () =>
+      import('./shared/components/forbidden/forbidden.component').then((m) => m.ForbiddenComponent),
+    title: 'Access Denied — EventHub',
   },
 
   // ── Public Layout ──────────────────────────────────────────────────────────
